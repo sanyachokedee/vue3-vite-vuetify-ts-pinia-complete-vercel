@@ -114,7 +114,6 @@ const productTemp: any = ref({})
 
 // Const for check state update (ไว้เช็คว่าผู้ใช้เปิดหน้าแก้ไขอยู่หรือไม่)
 const updateState = ref(false)
-
 // Const for delete product ID
 const product_id = ref('')
 
@@ -123,6 +122,9 @@ const product = ref({
     name: '',
     price: ''
 })
+
+// ตัวแปรเก็บจำนวนนับ
+const count: any = ref(0) 
 
 // Method Open Add Dialog
 const OpenAddDialog = () => {
@@ -158,6 +160,8 @@ const closeDialog = () => {
     dialog.value = false
 }
 
+
+
 // Fetch Products from firebase
 onMounted(() => {
     // console.log('เริ่มอ่าน db')
@@ -169,7 +173,14 @@ onMounted(() => {
             products.value.push(doc.data()) 
             // console.log(products.value[0])
         })
-    })  
+    })
+
+    // Count total new products
+    db.collection("product_counts")
+        .onSnapshot((querySnapshot) => {
+            count.value = querySnapshot.docs[0].data()
+        // console.log(count.value.total)
+    })
 })
 
 // Add New Product to firebase
@@ -191,6 +202,13 @@ const addProduct = () => {
     // Reset Form
     product.value.name = ""
     product.value.price = ""
+
+    // Update total count 
+    db.collection("product_counts")    
+        .doc('p_count')
+        .update({
+            total: count.value.total +1 
+        })  
 }
 
 // Update Product to firease
