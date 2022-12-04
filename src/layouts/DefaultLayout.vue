@@ -48,6 +48,12 @@
 
             <v-spacer></v-spacer>
 
+            <v-btn class="text-none" stacked>
+                <v-badge color="error" :content="count.total">
+                    <v-icon>mdi-store-outline</v-icon>
+                </v-badge>
+            </v-btn>
+
             <v-menu open-on-click>
                 
                 <template v-slot:activator="{ props }">
@@ -80,10 +86,23 @@
 
 <script setup lang="ts">
     
-    import { ref } from 'vue'
+    import { onMounted, ref } from 'vue'
     import { useTheme } from 'vuetify'
     import { useI18n } from 'vue-i18n'
-    import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
+import { db } from '../plugins/firebase';
+
+// ตัวแปรเก็บจำนวนนับ
+const count: any = ref(0) 
+
+// Fetch Product's count
+onMounted(() => {
+    db.collection("product_counts")
+        .onSnapshot((querySnapshot) => {
+            count.value = querySnapshot.docs[0].data()
+        // console.log(count.value.total)
+    })
+})
 
     // Get Meta Router
     const route = useRoute()
