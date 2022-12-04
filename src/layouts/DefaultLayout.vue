@@ -48,11 +48,14 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn class="text-none" stacked>
-                <v-badge color="error" :content="count.total">
+            <!-- Notification Count -->
+            <v-btn class="text-none" stacked @click="clearCount()">
+                <v-badge v-if="count.total > 0" color="error" :content="count.total">
                     <v-icon>mdi-store-outline</v-icon>
                 </v-badge>
+                <v-icon  v-if="count.total <= 0">mdi-store-outline</v-icon>
             </v-btn>
+              <!--End Notification Count -->
 
             <v-menu open-on-click>
                 
@@ -91,6 +94,7 @@
     import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { db } from '../plugins/firebase';
+import router from '@/router/index';
 
 // ตัวแปรเก็บจำนวนนับ
 const count: any = ref(0) 
@@ -107,6 +111,19 @@ onMounted(() => {
     // Get Meta Router
     const route = useRoute()
     // console.log(route.meta.header)
+
+    // Clear count total
+const clearCount = () => { 
+        // Push to product_count
+    router.push('/product')
+
+    // Update total  count in firebase
+    db.collection("product_counts")
+        .doc('p_count')
+        .update({
+            total :0
+        })
+    }
 
     // Toggle Drawer
     const drawer =  ref(true)
